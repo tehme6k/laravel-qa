@@ -29,7 +29,7 @@ class Question extends Model
     public function getStatusAttribute()
     {
         if($this->answers_count > 0){
-            if($this->best_answere_id){
+            if($this->best_answer_id){
                 return "answered-accepted";
             }
             return "answered";
@@ -54,11 +54,25 @@ class Question extends Model
         $this->save();
     }
 
+    public function favorites()
+    {
+        return $this->belongsToMany(User::class, 'favorites')->withTimeStamps(); //, 'question_id', 'user_id');
+    }
 
+    public function isFavorited()
+    {
+        return $this->favorites()->where('user_id', auth()->id())->count() > 0;
+    }
 
+    public function getIsFavoritedAttribute()
+    {
+        return $this->isFavorited();
+    }
 
-
-
+    public function getFavoritesCountAttribute()
+    {
+        return $this->favorites->count();
+    }
 
 
 
